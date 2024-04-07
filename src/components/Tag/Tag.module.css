@@ -1,0 +1,25 @@
+
+.ANDROID {
+  background-color: rgba(229, 180, 84, 0.1);
+  color: #E5B454;
+}
+
+.RAILS {
+  background-color: rgba(218, 88, 75, 0.1);
+  color: #DA584B;
+}
+
+.NODE_JS {
+  background-color: rgba(229, 180, 84, 0.1);
+  color: #E5B454;
+}
+
+.REACT {
+  background-color: rgba(72, 184, 220, 0.1);
+  color: #3299D0;
+}
+
+.IOS {
+  background-color: rgba(112, 178, 82, 0.1);
+  color: #70B252;
+}
