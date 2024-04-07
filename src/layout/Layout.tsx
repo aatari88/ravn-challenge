@@ -1,22 +1,24 @@
 import { AppShell, Group } from '@mantine/core';
 import { Outlet } from 'react-router-dom';
+import Sidebar from '@/components/SideBar/SideBar';
+import Header from '@/components/Header/Header';
 
 export default function Layout() {
   return (
     <AppShell
       layout="alt"
-      header={{ height: 90 }}
-      navbar={{ width: 264, breakpoint: 'sm' }}
-      padding="md"
+      header={{ height: 160 }}
+      navbar={{ width: '25%', breakpoint: 'sm' }}
+      padding="lg"
       // withBorder={false}
     >
       <AppShell.Header>
-        <Group h="100%" px="md">
-          <h1>Header</h1>
+        <Group px="md" pt="lg">
+          <Header />
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        <h1>SideBar</h1>
+        <Sidebar />
       </AppShell.Navbar>
       <AppShell.Main>
         <Outlet />

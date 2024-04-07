@@ -6,7 +6,7 @@ import Router from './routes';
 
 export default function App() {
   return (
-    <MantineProvider theme={theme}>
+    <MantineProvider theme={theme} forceColorScheme="dark">
       <BrowserRouter>
         <Router />
       </BrowserRouter>

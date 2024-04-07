@@ -1,0 +1,7 @@
+/* TaskCard.module.css */
+.card {
+  border-radius: 8px;
+  background-color: #2C2F33;
+  padding-top: 0;
+  padding-bottom: 0;
+}

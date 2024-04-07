@@ -1,0 +1,22 @@
+/* Sidebar.module.css */
+.navLink {
+  height: 56px;
+  font-weight: bold;
+  color: #94979A;
+  font-size: 15px;
+}
+
+/* .navLink:active {
+  border: 1;
+
+} */
+
+/* &:active {
+  border: 1px solid #f0f0f0;
+} */
+
+.root[data-active] {
+  background-color: rgba(210, 77, 77, 0.1);
+  border-right: 4px solid #BA2525;
+  color: #DA584B;
+}
