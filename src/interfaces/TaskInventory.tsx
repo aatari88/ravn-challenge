@@ -13,10 +13,20 @@ export interface TaskInventory {
 }
 
 export interface Assignee {
+  id: string
   fullName: string
   avatar: string
 }
 
 export interface TaskInventoryVars {
-  input: object
+  input: TaskVar
+}
+
+export interface TaskVar {
+  assigneeId: string
+  dueDate: string
+  name: string
+  pointEstimate: string
+  status: string
+  tags: string[]
 }

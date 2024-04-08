@@ -1,7 +1,7 @@
 import { Box, Group, ScrollArea, Skeleton, Stack, Text } from '@mantine/core';
 import { gql, useQuery } from '@apollo/client';
 import TaskCard from '@/components/TaskCard/TaskCard';
-import { TaskInventoryData, TaskInventoryVars } from '@/interfaces/TaskInventory';
+import { TaskInventoryData } from '@/interfaces/TaskInventory';
 
 const GET_TASK_INVENTORY = gql`
   query Tasks($input: FilterTaskInput!) {
@@ -21,7 +21,7 @@ const GET_TASK_INVENTORY = gql`
 `;
 
 export default function Dashboard() {
-  const { loading, data, error } = useQuery<TaskInventoryData, TaskInventoryVars>(
+  const { loading, data, error } = useQuery<TaskInventoryData>(
     GET_TASK_INVENTORY,
     { variables: { input: {} } }
   );
@@ -67,10 +67,15 @@ export default function Dashboard() {
   }
 
   const tasks_backlog = data?.tasks.filter(stack => stack.status === 'BACKLOG');
+  tasks_backlog?.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   const tasks_cancelled = data?.tasks.filter(stack => stack.status === 'CANCELLED');
+  tasks_cancelled?.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   const tasks_done = data?.tasks.filter(stack => stack.status === 'DONE');
+  tasks_done?.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   const tasks_in_progress = data?.tasks.filter(stack => stack.status === 'IN_PROGRESS');
+  tasks_in_progress?.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   const tasks_todo = data?.tasks.filter(stack => stack.status === 'TODO');
+  tasks_todo?.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
   return (
     <Box w="1108px">
