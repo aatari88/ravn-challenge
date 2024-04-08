@@ -30,6 +30,14 @@ const dataLabel = [
   { value: 'IOS', label: 'IOS' },
 ];
 
+const dataStatus = [
+  { value: 'BACKLOG', label: 'Backlog' },
+  { value: 'TODO', label: 'Todo' },
+  { value: 'IN_PROGRESS', label: 'In Progress' },
+  { value: 'DONE', label: 'Done' },
+  { value: 'CANCELLED', label: 'Cancelled' },
+];
+
 const GET_USERS = gql`
   query Users {
     users {
@@ -222,6 +230,13 @@ const ModalTask: React.FC<PropTypes> = ({ task, opened, close }) => {
                 leftSection={<RiPriceTagLine />}
                 placeholder="Label"
                 {...form.getInputProps('tags')}
+              />
+            </Group>
+            <Group>
+              <Select
+                data={dataStatus}
+                leftSection={<RiUser3Line />}
+                {...form.getInputProps('status')}
               />
             </Group>
             <Group justify="flex-end">
