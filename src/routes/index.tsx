@@ -4,6 +4,7 @@ import { Dashboard, MyTask } from './elements';
 import NotFound from '@/pages/NotFound';
 import Layout from '@/layout/Layout';
 import ErrorPage from '@/pages/ErrorPage';
+import Settings from '@/pages/Settings';
 
 export default function Router() {
   return useRoutes([
@@ -14,6 +15,7 @@ export default function Router() {
         { index: true, element: <Dashboard /> },
         { path: 'dashboard', element: <Dashboard /> },
         { path: 'my_task', element: <MyTask /> },
+        { path: 'settings', element: <Settings /> },
       ],
     },
     { path: '404', element: <NotFound /> },

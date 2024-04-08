@@ -1,7 +1,5 @@
 import { Suspense, lazy } from 'react';
 import LoadingScreen from '@/components/LoadingScreen/LoadingScreen';
-// components
-// import LoadingScreen from '../components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -17,4 +15,5 @@ const Loadable = (Component: React.ComponentType<any>) => (props: any) =>
 
 export const Dashboard = Loadable(lazy(() => import('../pages/Dashboard')));
 export const MyTask = Loadable(lazy(() => import('../pages/MyTask')));
+export const Settings = Loadable(lazy(() => import('../pages/Settings')));
 export const NotFound = Loadable(lazy(() => import('../pages/NotFound')));
