@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import { TextInput, Button, Group, Stack, Skeleton, Center, Box } from '@mantine/core';
+import { TextInput, Button, Stack, Skeleton, Center, Box } from '@mantine/core';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 
@@ -28,8 +28,7 @@ const GET_PROFILE = gql`
 `;
 
 const Settings: React.FC = () => {
-  const { loading, data, error } = useQuery<UserProfileData>(GET_PROFILE);
-  console.log(data);
+  const { loading, data } = useQuery<UserProfileData>(GET_PROFILE);
 
   if (loading) {
   return (
