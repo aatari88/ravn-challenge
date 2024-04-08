@@ -11,28 +11,17 @@
     > `yarn dev`
 
 ## Project description
+![caption](ravn_challenge.gif)
 
-This project 
+This project is to create tasks, which can be placed in the following columns: BACKLOG, CANCELLED, DONE, IN_PROGRESS, TODO. These tasks can be modified and deleted. 
 
-## npm scripts
+I recently discovered Mantine as a replacement for Material UI, due to cost issues. That's why I decided to use it in this project.
 
-## Build and dev scripts
+At first I decided not to use React Context, but when I implemented the animation for the new tasks it became more practical for me to use it.
 
-- `dev` – start development server
-- `build` – build production version of the app
-- `preview` – locally preview production build
-
-### Testing scripts
-
-- `typecheck` – checks TypeScript types
-- `lint` – runs ESLint
-- `prettier:check` – checks files with Prettier
-- `vitest` – runs vitest tests
-- `vitest:watch` – starts vitest watch
-- `test` – runs `vitest`, `prettier:check`, `lint` and `typecheck` scripts
-
-### Other scripts
-
-- `storybook` – starts storybook dev server
-- `storybook:build` – build production storybook bundle to `storybook-static`
-- `prettier:write` – formats all files with Prettier
+## Technologies/libraries
+* React
+* Apollo Client
+* Mantine
+* Remix Icon
+* Animate.css
