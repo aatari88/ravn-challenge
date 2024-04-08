@@ -1,14 +1,18 @@
-# Mantine Vite template
+# Ravn-Challenge
 
-## Features
+## How to run it?
+1. Clone repository
+    > `git clone https://github.com/aatari88/ravn-challenge.git`
+2. Go directory
+    > `cd ravn-challenge`
+3. Install dependencies
+    > `yarn install`
+4. Start project
+    > `yarn dev`
 
-This template comes with the following features:
+## Project description
 
-- [PostCSS](https://postcss.org/) with [mantine-postcss-preset](https://mantine.dev/styles/postcss-preset)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Storybook](https://storybook.js.org/)
-- [Vitest](https://vitest.dev/) setup with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro)
-- ESLint setup with [eslint-config-mantine](https://github.com/mantinedev/eslint-config-mantine)
+This project 
 
 ## npm scripts
 

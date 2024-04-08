@@ -1,13 +1,16 @@
-import { ActionIcon, Avatar, Card, Group, Menu, Text } from '@mantine/core';
+import { ActionIcon, Avatar, Box, Card, Group, Menu, Text } from '@mantine/core';
 import { RiAlarmLine, RiAttachment2, RiChat3Line, RiDeleteBinLine, RiEditLine, RiMoreLine, RiNodeTree } from '@remixicon/react';
 import moment from 'moment';
 import { useDisclosure } from '@mantine/hooks';
 import { gql, useMutation } from '@apollo/client';
 import { modals } from '@mantine/modals';
+import { useContext } from 'react';
 import classes from './TaskCard.module.css';
 import { TaskInventory } from '@/interfaces/TaskInventory';
 import Tag from '../Tag/Tag';
 import ModalTask from '../Modal/ModalTask';
+import 'animate.css';
+import { TaskContext } from '@/context/context';
 
 interface PropTypes {
   task: TaskInventory;
@@ -54,8 +57,10 @@ const DELETE_TASK = gql`
 `;
 
 const TaskCard: React.FC<PropTypes> = ({ task }) => {
+  const { newTask } = useContext(TaskContext);
+
   const [opened, { open, close }] = useDisclosure(false);
-  const { name, assignee, dueDate, pointEstimate, tags } = task;
+  const { id, name, assignee, dueDate, pointEstimate, tags } = task;
   const [deleteTask] = useMutation(DELETE_TASK);
   const handleDelete = () => {
     deleteTask({
@@ -81,6 +86,7 @@ const TaskCard: React.FC<PropTypes> = ({ task }) => {
   });
 
   return (
+    <Box className={id === newTask ? 'animate__animated animate__shakeX' : ''}>
     <Card className={classes.card}>
       <Group justify="space-between" mt="md" mb="xs" my={0}>
         <Text size="18px" fw={600}>{name}</Text>
@@ -115,6 +121,7 @@ const TaskCard: React.FC<PropTypes> = ({ task }) => {
       </Group>
       <ModalTask opened={opened} close={close} task={task} />
     </Card>
+    </Box>
   );
 };
 

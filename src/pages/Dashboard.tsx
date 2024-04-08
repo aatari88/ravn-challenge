@@ -104,7 +104,7 @@ export default function Dashboard() {
       <Group gap={25} justify="start" p={4} pt={0} align="flex-start" grow preventGrowOverflow={false} wrap="nowrap">
         {taskData.map((task_h) => (
           <Stack key={task_h.status} w={348} gap={12}>
-            <Text size="18px" fw={600} mb={10}>{task_h.status} ({task_h.data.length})</Text>
+            <Text size="18px" fw={600} mb={10}>{task_h.status.replace('_', ' ')} ({task_h.data.length})</Text>
             {(task_h.data || []).map((task: TaskInventory) => (
               <TaskCard key={task.id} task={task} />
             ))}

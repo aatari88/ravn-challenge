@@ -3,10 +3,11 @@ import { DateInput } from '@mantine/dates';
 import { RiDice5Line, RiPriceTagLine, RiUser3Line } from '@remixicon/react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useForm } from '@mantine/form';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { modals } from '@mantine/modals';
 import { TaskInventory, TaskInventoryData } from '@/interfaces/TaskInventory';
 import { UserData } from '@/interfaces/User';
+import { TaskContext } from '@/context/context';
 
 const dataEstimate = [
   { value: 'ZERO', label: '0 Points' },
@@ -32,10 +33,10 @@ const dataLabel = [
 
 const dataStatus = [
   { value: 'BACKLOG', label: 'Backlog' },
-  { value: 'TODO', label: 'Todo' },
-  { value: 'IN_PROGRESS', label: 'In Progress' },
-  { value: 'DONE', label: 'Done' },
   { value: 'CANCELLED', label: 'Cancelled' },
+  { value: 'DONE', label: 'Done' },
+  { value: 'IN_PROGRESS', label: 'In Progress' },
+  { value: 'TODO', label: 'Todo' },
 ];
 
 const GET_USERS = gql`
@@ -108,8 +109,15 @@ interface PropTypes {
 }
 
 const ModalTask: React.FC<PropTypes> = ({ task, opened, close }) => {
-  const [addTask] = useMutation(ADD_TASK);
+  const [addTask, { data: newTask }] = useMutation(ADD_TASK);
   const [changeTask] = useMutation(UPDATE_TASK);
+  const { addNewTask } = useContext(TaskContext);
+  useEffect(() => {
+    if (newTask) {
+      addNewTask(newTask.createTask.id);
+    }
+  }, [newTask]);
+
   const [, setDate] = useState<Date>(new Date());
 
   const { data } = useQuery<UserData>(
@@ -158,6 +166,7 @@ const ModalTask: React.FC<PropTypes> = ({ task, opened, close }) => {
         },
       });
       close();
+      form.reset();
     }
   };
 
