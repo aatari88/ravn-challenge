@@ -3,11 +3,11 @@ import { RiAlarmLine, RiAttachment2, RiChat3Line, RiDeleteBinLine, RiEditLine, R
 import moment from 'moment';
 import { useDisclosure } from '@mantine/hooks';
 import { gql, useMutation } from '@apollo/client';
+import { modals } from '@mantine/modals';
 import classes from './TaskCard.module.css';
 import { TaskInventory } from '@/interfaces/TaskInventory';
 import Tag from '../Tag/Tag';
 import ModalTask from '../Modal/ModalTask';
-import { modals } from '@mantine/modals';
 
 interface PropTypes {
   task: TaskInventory;
