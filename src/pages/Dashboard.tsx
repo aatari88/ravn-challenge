@@ -2,7 +2,7 @@ import { Box, Group, ScrollArea, Skeleton, Stack, Text } from '@mantine/core';
 import { gql, useQuery } from '@apollo/client';
 import { useOutletContext } from 'react-router-dom';
 import TaskCard from '@/components/TaskCard/TaskCard';
-import { TaskInventoryData } from '@/interfaces/TaskInventory';
+import { TaskInventory, TaskInventoryData } from '@/interfaces/TaskInventory';
 
 const GET_TASK_INVENTORY = gql`
   query Tasks($input: FilterTaskInput!) {
@@ -21,6 +21,8 @@ const GET_TASK_INVENTORY = gql`
     }
   }
 `;
+
+const array_status = ['BACKLOG', 'CANCELLED', 'DONE', 'IN_PROGRESS', 'TODO'];
 
 export default function Dashboard() {
   const [search] = useOutletContext<string>();
@@ -76,51 +78,38 @@ export default function Dashboard() {
     );
   }
 
-  const tasks_backlog = data?.tasks.filter(stack => stack.status === 'BACKLOG');
-  tasks_backlog?.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-  const tasks_cancelled = data?.tasks.filter(stack => stack.status === 'CANCELLED');
-  tasks_cancelled?.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-  const tasks_done = data?.tasks.filter(stack => stack.status === 'DONE');
-  tasks_done?.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-  const tasks_in_progress = data?.tasks.filter(stack => stack.status === 'IN_PROGRESS');
-  tasks_in_progress?.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-  const tasks_todo = data?.tasks.filter(stack => stack.status === 'TODO');
-  tasks_todo?.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  const groupBy = (xs: any[], key: string | number) => xs.reduce((rv, x) => {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+
+  const grouped = groupBy(data?.tasks ?? [], 'status');
+
+  for (const [key, group] of Object.entries(grouped)) {
+    group.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  }
+
+  const taskData: any[] = [];
+  array_status.forEach((status) => {
+    taskData.push({
+      status,
+      data: grouped[status] ?? [],
+    });
+  });
 
   return (
     <Box w="1108px">
       <ScrollArea h="78vh">
+
       <Group gap={25} justify="start" p={4} pt={0} align="flex-start" grow preventGrowOverflow={false} wrap="nowrap">
-        <Stack w={348} gap={12}>
-          <Text size="18px" fw={600} mb={10}>Backlog ({tasks_backlog?.length})</Text>
-          {(tasks_backlog || []).map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </Stack>
-        <Stack w={348} gap={12}>
-          <Text size="18px" fw={600} mb={10}>Cancelled ({tasks_cancelled?.length})</Text>
-          {(tasks_cancelled || []).map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </Stack>
-        <Stack w={348} gap={12}>
-          <Text size="18px" fw={600} mb={10}>Done ({tasks_done?.length})</Text>
-          {(tasks_done || []).map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </Stack>
-        <Stack w={348} gap={12}>
-          <Text size="18px" fw={600} mb={10}>In progress ({tasks_in_progress?.length})</Text>
-          {(tasks_in_progress || []).map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </Stack>
-        <Stack w={348} gap={12}>
-          <Text size="18px" fw={600} mb={10}>Todo ({tasks_todo?.length})</Text>
-          {(tasks_todo || []).map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </Stack>
+        {taskData.map((task_h) => (
+          <Stack key={task_h.status} w={348} gap={12}>
+            <Text size="18px" fw={600} mb={10}>{task_h.status} ({task_h.data.length})</Text>
+            {(task_h.data || []).map((task: TaskInventory) => (
+              <TaskCard key={task.id} task={task} />
+            ))}
+          </Stack>
+        ))}
       </Group>
       </ScrollArea>
     </Box>
