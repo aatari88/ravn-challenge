@@ -3,7 +3,9 @@ import { DateInput } from '@mantine/dates';
 import { RiDice5Line, RiPriceTagLine, RiUser3Line } from '@remixicon/react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { useForm } from '@mantine/form';
-import { TaskInventory, TaskInventoryData, TaskInventoryVars } from '@/interfaces/TaskInventory';
+import { useState } from 'react';
+import { modals } from '@mantine/modals';
+import { TaskInventory, TaskInventoryData } from '@/interfaces/TaskInventory';
 import { UserData } from '@/interfaces/User';
 
 const dataEstimate = [
@@ -65,6 +67,25 @@ const ADD_TASK = gql`
       tags
       pointEstimate
       assignee {
+        id
+        fullName
+        avatar
+      }
+    }
+  }
+`;
+
+const UPDATE_TASK = gql`
+  mutation UpdateTask($input: UpdateTaskInput!) {
+    updateTask(input: $input) {
+      id
+      name
+      status
+      dueDate
+      tags
+      pointEstimate
+      assignee {
+        id
         fullName
         avatar
       }
@@ -80,6 +101,8 @@ interface PropTypes {
 
 const ModalTask: React.FC<PropTypes> = ({ task, opened, close }) => {
   const [addTask] = useMutation(ADD_TASK);
+  const [changeTask] = useMutation(UPDATE_TASK);
+  const [, setDate] = useState<Date>(new Date());
 
   const { data } = useQuery<UserData>(
     GET_USERS,
@@ -91,23 +114,43 @@ const ModalTask: React.FC<PropTypes> = ({ task, opened, close }) => {
   // if (error) console.log(error.message);
 
   const onSubmit = (info: any) => {
-    addTask({
-      variables: { input: info },
-      update: (cache, { data: { createTask } }) => {
-        const tasks_cache = cache.readQuery<TaskInventoryData>({
-          query: GET_TASK_INVENTORY,
-          variables: { input: {} },
-        }) || { tasks: [] };
-        cache.writeQuery({
-          query: GET_TASK_INVENTORY,
-          variables: { input: {} },
-          data: {
-            tasks: [...tasks_cache.tasks, createTask],
-          },
-        });
-      },
-    });
-    close();
+    if (task) {
+      changeTask({
+        variables: { input: { ...info, id: task.id } },
+        update: (cache, { data: { updateTask } }) => {
+          const tasks_cache = cache.readQuery<TaskInventoryData>({
+            query: GET_TASK_INVENTORY,
+            variables: { input: {} },
+          }) || { tasks: [] };
+          cache.writeQuery({
+            query: GET_TASK_INVENTORY,
+            variables: { input: {} },
+            data: {
+              tasks: tasks_cache.tasks.map((t) => (t.id === updateTask.id ? updateTask : t)),
+            },
+          });
+        },
+      });
+      close();
+    } else {
+      addTask({
+        variables: { input: info },
+        update: (cache, { data: { createTask } }) => {
+          const tasks_cache = cache.readQuery<TaskInventoryData>({
+            query: GET_TASK_INVENTORY,
+            variables: { input: {} },
+          }) || { tasks: [] };
+          cache.writeQuery({
+            query: GET_TASK_INVENTORY,
+            variables: { input: {} },
+            data: {
+              tasks: [...tasks_cache.tasks, createTask],
+            },
+          });
+        },
+      });
+      close();
+    }
   };
 
   const form = useForm({
@@ -117,7 +160,7 @@ const ModalTask: React.FC<PropTypes> = ({ task, opened, close }) => {
       status: task?.status || 'BACKLOG',
       pointEstimate: task?.pointEstimate || '',
       tags: task?.tags || [],
-      dueDate: task?.dueDate || new Date(),
+      dueDate: task?.dueDate,
     },
 
     validate: {
@@ -128,12 +171,20 @@ const ModalTask: React.FC<PropTypes> = ({ task, opened, close }) => {
     },
   });
 
+  const confirmModal = (info: any) => modals.openConfirmModal({
+    title: 'Please confirm your action',
+    labels: { confirm: 'Confirm', cancel: 'Cancel' },
+    onCancel: () => console.log('Cancel'),
+    onConfirm: () => onSubmit(info),
+  });
+
   return (
     <Modal opened={opened} onClose={close} withCloseButton={false} centered size={572}>
       <Box>
-        <form onSubmit={form.onSubmit(onSubmit)}>
+        <form onSubmit={form.onSubmit(confirmModal)}>
           <Stack gap={20} p={20}>
             <TextInput
+              data-autofocus
               {...form.getInputProps('name')}
               variant="unstyled"
               placeholder="Task Title"
@@ -153,10 +204,16 @@ const ModalTask: React.FC<PropTypes> = ({ task, opened, close }) => {
                 {...form.getInputProps('assigneeId')}
               />
               <DateInput
+                value={form.values.dueDate ? new Date(form.values.dueDate) : undefined}
+                onChange={(value) => {
+                  form.setFieldValue('dueDate', value?.toISOString());
+                  if (value) {
+                    setDate(value);
+                  }
+                }}
                 clearable
                 defaultValue={new Date()}
                 placeholder="Date input"
-                {...form.getInputProps('dueDate')}
               />
             </Group>
             <Group grow>
@@ -169,7 +226,7 @@ const ModalTask: React.FC<PropTypes> = ({ task, opened, close }) => {
             </Group>
             <Group justify="flex-end">
               <Button variant="subtle" color="gray" onClick={close}>Cancel</Button>
-              <Button color="red" type="submit">Create</Button>
+              <Button color="red" type="submit">{ task ? 'Update' : 'Create'}</Button>
             </Group>
           </Stack>
         </form>

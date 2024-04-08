@@ -13,6 +13,7 @@ const GET_TASK_INVENTORY = gql`
       tags
       pointEstimate
       assignee {
+        id
         fullName
         avatar
       }

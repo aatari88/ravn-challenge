@@ -1,9 +1,13 @@
-import { ActionIcon, Avatar, Card, Group, Text } from '@mantine/core';
-import { RiAlarmLine, RiAttachment2, RiChat3Line, RiMoreLine, RiNodeTree } from '@remixicon/react';
+import { ActionIcon, Avatar, Card, Group, Menu, Text } from '@mantine/core';
+import { RiAlarmLine, RiAttachment2, RiChat3Line, RiDeleteBinLine, RiEditLine, RiMoreLine, RiNodeTree } from '@remixicon/react';
 import moment from 'moment';
+import { useDisclosure } from '@mantine/hooks';
+import { gql, useMutation } from '@apollo/client';
 import classes from './TaskCard.module.css';
 import { TaskInventory } from '@/interfaces/TaskInventory';
 import Tag from '../Tag/Tag';
+import ModalTask from '../Modal/ModalTask';
+import { modals } from '@mantine/modals';
 
 interface PropTypes {
   task: TaskInventory;
@@ -41,13 +45,58 @@ const TextDueTime = ({ dueDate }: { dueDate: string }) => {
   );
 };
 
+const DELETE_TASK = gql`
+  mutation DeleteTask($input: DeleteTaskInput!) {
+    deleteTask(input: $input) {
+      id
+    }
+  }
+`;
+
 const TaskCard: React.FC<PropTypes> = ({ task }) => {
+  const [opened, { open, close }] = useDisclosure(false);
   const { name, assignee, dueDate, pointEstimate, tags } = task;
+  const [deleteTask] = useMutation(DELETE_TASK);
+  const handleDelete = () => {
+    deleteTask({
+      variables: { input: { id: task.id } },
+      update(cache) {
+        cache.modify({
+          fields: {
+            // eslint-disable-next-line @typescript-eslint/default-param-last
+            tasks(existingTasks = [], { readField }) {
+              return existingTasks.filter((taskRef: any) => task.id !== readField('id', taskRef));
+            },
+          },
+        });
+      },
+    });
+  };
+
+  const confirmModal = () => modals.openConfirmModal({
+    title: 'Please confirm your action',
+    labels: { confirm: 'Confirm', cancel: 'Cancel' },
+    onCancel: () => console.log('Cancel'),
+    onConfirm: () => handleDelete(),
+  });
+
   return (
     <Card className={classes.card}>
       <Group justify="space-between" mt="md" mb="xs" my={0}>
         <Text size="18px" fw={600}>{name}</Text>
-        <ActionIcon variant="transparent"><RiMoreLine size={24} color="gray" /></ActionIcon>
+        <Menu shadow="md" width={138} position="bottom-end">
+          <Menu.Target>
+            <ActionIcon variant="transparent"><RiMoreLine size={24} color="gray" /></ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item leftSection={<RiEditLine size={24} />} onClick={open}>
+              <Text size="15px" fw={600} ml={8}>Edit</Text>
+            </Menu.Item>
+            <Menu.Item leftSection={<RiDeleteBinLine size={24} />} onClick={confirmModal}>
+              <Text size="15px" fw={600} ml={8}>Delete</Text>
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       </Group>
       <Group justify="space-between">
         <Text size="15px" fw={600}>{numbers.findIndex(e => e === pointEstimate)} Points</Text>
@@ -64,6 +113,7 @@ const TaskCard: React.FC<PropTypes> = ({ task }) => {
           <RiChat3Line size={16} />
         </Group>
       </Group>
+      <ModalTask opened={opened} close={close} task={task} />
     </Card>
   );
 };
